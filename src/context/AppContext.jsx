@@ -4,7 +4,7 @@ import axios from "axios";
 import { fetchAdmin, fetchUser } from "../api/auth";
 import { fetchAllProducts } from "../api/Product";
 import { toast } from "react-hot-toast";
-import { updateCart } from '../api/cart'; 
+import { updateCart } from "../api/cart";
 
 // Axios global config
 axios.defaults.withCredentials = true;
@@ -21,6 +21,7 @@ export const AppContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [loading, setLoading] = useState(true);
+  const [dashboardLoad, setDashboardLoad] = useState(false);
   const [role, setRole] = useState(() => {
     return localStorage.getItem("role") || null;
   });
@@ -76,79 +77,72 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
+  // Add item to cart
+  const addToCart = (itemId) => {
+    const updatedCart = structuredClone(cartItems);
 
+    updatedCart[itemId] = (updatedCart[itemId] || 0) + 1;
 
-// Add item to cart
-const addToCart = (itemId) => {
-  const updatedCart = structuredClone(cartItems);
+    setCartItems(updatedCart);
+    toast.success("Item added to cart");
+  };
 
-  updatedCart[itemId] = (updatedCart[itemId] || 0) + 1;
+  // Update cart item quantity
+  const updateCartItem = ({ itemId, quantity }) => {
+    const updatedCart = structuredClone(cartItems);
+    updatedCart[itemId] = quantity;
 
-  setCartItems(updatedCart);
-  toast.success("Item added to cart");
-};
+    setCartItems(updatedCart);
+    toast.success("Cart updated");
+  };
 
-// Update cart item quantity
-const updateCartItem = ({ itemId, quantity }) => {
-  const updatedCart = structuredClone(cartItems);
-  updatedCart[itemId] = quantity;
+  // Remove item from cart
+  const removeCartItem = (itemId) => {
+    const updatedCart = structuredClone(cartItems);
 
-  setCartItems(updatedCart);
-  toast.success("Cart updated");
-};
+    if (updatedCart[itemId]) {
+      updatedCart[itemId] -= 1;
 
-// Remove item from cart
-const removeCartItem = (itemId) => {
-  const updatedCart = structuredClone(cartItems);
+      if (updatedCart[itemId] === 0) {
+        delete updatedCart[itemId];
+      }
 
-  if (updatedCart[itemId]) {
-    updatedCart[itemId] -= 1;
+      setCartItems(updatedCart);
+      toast.success("Item removed from cart");
+    }
+  };
 
-    if (updatedCart[itemId] === 0) {
+  // Remove item from cart
+  const deleteCartItem = (itemId) => {
+    const updatedCart = { ...cartItems };
+
+    if (updatedCart[itemId]) {
       delete updatedCart[itemId];
+      setCartItems(updatedCart);
+      toast.success("Item completely removed from cart");
+    } else {
+      toast.error("Item not found in cart");
+    }
+  };
+
+  // Get total item count in cart
+  const getCartCount = () => {
+    return Object.values(cartItems).reduce((total, qty) => total + qty, 0);
+  };
+
+  // Get total cart amount
+  const getCartAmount = () => {
+    let total = 0;
+
+    for (const itemId in cartItems) {
+      const product = products.find((p) => p._id === itemId);
+      if (product) {
+        total += product.offerPrice * cartItems[itemId];
+      }
     }
 
-    setCartItems(updatedCart);
-    toast.success("Item removed from cart");
-  }
-};
-
-// Remove item from cart
-const deleteCartItem = (itemId) => {
-  const updatedCart = { ...cartItems };
-
-  if (updatedCart[itemId]) {
-    delete updatedCart[itemId];
-    setCartItems(updatedCart);
-    toast.success("Item completely removed from cart");
-  } else {
-    toast.error("Item not found in cart");
-  }
-};
-
-
-
-// Get total item count in cart
-const getCartCount = () => {
-  return Object.values(cartItems).reduce((total, qty) => total + qty, 0);
-};
-
-// Get total cart amount
-const getCartAmount = () => {
-  let total = 0;
-
-  for (const itemId in cartItems) {
-    const product = products.find((p) => p._id === itemId);
-    if (product) {
-      total += product.offerPrice * cartItems[itemId];
-    }
-  }
-
-  return Math.floor(total * 100) / 100;
-};
-
-
-
+    return Math.floor(total * 100) / 100;
+  };
 
   const openCart = () => {
     setIsCartOpen(true);
@@ -164,9 +158,6 @@ const getCartAmount = () => {
     }
   }, [product]);
 
-
-
-
   useEffect(() => {
     if (role) {
       fetchAuthStatus();
@@ -176,15 +167,12 @@ const getCartAmount = () => {
     const data = fetchAllProducts(axios, setProducts, toast, isAdmin);
   }, [role]);
 
-
-
   // update cart
   useEffect(() => {
     if (user && cartItems) {
-      updateCart(axios, cartItems,  toast);
+      updateCart(axios, cartItems, toast);
     }
   }, [cartItems]);
-
 
   const value = {
     navigate,
@@ -221,7 +209,9 @@ const getCartAmount = () => {
     setWishlistItems,
     removeCartItem,
     updateCartItem,
-    deleteCartItem
+    deleteCartItem,
+    dashboardLoad,
+    setDashboardLoad,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

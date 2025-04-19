@@ -11,7 +11,8 @@ export default function AuthButton() {
     setIsUser,
     setIsAdmin,
     setRole,
-    axios
+    axios,
+    user
   } = useAppContext();
 
   const handleLogout = async () => {
@@ -27,9 +28,12 @@ export default function AuthButton() {
   return (
     <div className="hidden md:flex items-center group relative">
       <button
-        className="p-1 relative cursor-pointer rounded-full bg-green-500"
+        className="p-1 relative cursor-pointer rounded-full bg-green-500 overflow-hidden"
       >
-        <User className="h-6 w-6 text-white" />
+        {
+          user.profilePicture ? <img src={user.profilePicture} alt="user profile" className="w-6 h-6 scale-200 object-cover" /> : <User className="h-6 w-6 text-white" />
+        }
+        
       </button>
 
       {/* Hover Dropdown */}

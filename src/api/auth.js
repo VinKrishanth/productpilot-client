@@ -39,12 +39,13 @@ export const loginAuth = async (axios, role, setIsAuth, setRole, setIsUser, setI
  * @param {Object} credentials - { email, password }
  * @returns {Object} - Response data
  */
-export const registerUser = async (axios, navigate, setIsUser, setIsAuth, credentials) => {
+export const registerUser = async (axios, navigate, setIsUser, setIsAuth, credentials, setRole) => {
   try {
     const response = await axios.post('/api/auth/user/register', credentials);
     if(response.data.success){
       localStorage.setItem("role", response.data.user.role); 
       setIsUser(response.data.user);
+      setRole(response.data.user.role);    
       setIsAuth(true);
       navigate('/shop');
     }

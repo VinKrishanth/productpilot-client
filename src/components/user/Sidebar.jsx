@@ -41,7 +41,7 @@ const Sidebar = ({ className = '', isOpen = false, onClose = () => {} }) => {
           <div className="bg-black p-2 rounded-full">
             <Power className="text-white w-5 h-5" />
           </div>
-          <span className="ml-3 font-semibold text-gray-800  md:inline">Admin Panel</span>
+          <span className="ml-3 font-semibold text-gray-800  md:inline">Customer Panel</span>
         </div>
         {isMobile && (
           <button onClick={onClose} className="text-gray-600 hover:text-gray-900">

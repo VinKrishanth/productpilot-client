@@ -27,7 +27,7 @@ const AddProductForm = () => {
   const [offerPrice, setOfferPrice] = useState("");
   const [review, setReview] = useState("");
   const [inStock, setInStock] = useState(true);
-  const [files, setFiles] = useState([]);
+  
   const [type, setType] = useState("");
 
   const { navigate,  axios, setLoading, setProducts , toast, isAdmin} = useAppContext();

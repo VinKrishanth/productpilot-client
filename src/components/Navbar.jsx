@@ -5,8 +5,6 @@ import {
   Heart,
   Menu,
   X,
-  ChevronDown,
-  User,
   Phone,
 } from "lucide-react";
 import { cn } from "../utils/cn";

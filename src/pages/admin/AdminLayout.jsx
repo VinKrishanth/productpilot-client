@@ -5,12 +5,14 @@ import { Menu } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import { adminDefaultPic } from "../../assets/images/assets";
 import Header from "../../components/admin/Header";
+import { useAppContext } from "../../context/AppContext";
 
 export default function AdminLayout() {
   const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const { user } = useAppContext();
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -27,7 +29,7 @@ export default function AdminLayout() {
             </button>
             <div className="h-10 w-10 rounded-full bg-gray-200 overflow-hidden cursor-pointer">
               <img
-                src={adminDefaultPic}
+                src={user.profilePicture ? user.profilePicture : adminDefaultPic}
                 alt="User profile"
                 className="h-full w-full object-cover"
               />

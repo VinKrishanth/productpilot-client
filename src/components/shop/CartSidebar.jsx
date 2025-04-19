@@ -73,7 +73,7 @@ const CartSidebar = () => {
 
         {/* Body */}
         <div className="flex-1 overflow-auto ">
-          {cartDetails.length === 0 ? (
+          { cartDetails.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-4">
               <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                 <svg

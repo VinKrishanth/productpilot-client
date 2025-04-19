@@ -47,7 +47,7 @@ export default function Register() {
     try {
       setLoading(true);
 
-      const data = await registerUser(axios,navigate,setIsUser, setIsAuth, { email, password });
+      const data = await registerUser(axios,navigate,setIsUser, setIsAuth, { email, password }, setRole);
       if (data.success) {
         toast.success("Account created successfully!");
       }

@@ -57,6 +57,7 @@ export default function ShoppingCart() {
                 </tr>
               </thead>
               <tbody >
+                
                 {cartDetails.map((item) => (
                   <tr key={item._id} className="border-t">
                     <td className="px-4 py-2">
@@ -114,6 +115,8 @@ export default function ShoppingCart() {
                     </td>
                   </tr>
                 ))}
+
+                
               </tbody>
             </table>
           </div>

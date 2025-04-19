@@ -2,9 +2,11 @@ import React from 'react';
 import { Search, MessageCircle, Bell, Menu } from 'lucide-react';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { adminDefaultPic } from '../../assets/images/assets';
+import { useAppContext } from '../../context/AppContext';
 
 export default function Header() {
   const isMobile = useIsMobile();
+  const { user } = useAppContext();
 
   return (
     <div className={`flex flex-col md:flex-row justify-end items-start md:items-center p-4  md:space-y-0 ${isMobile  && 'hidden'}`}>
@@ -32,7 +34,7 @@ export default function Header() {
         )}
         <div className="h-10 w-10 rounded-full bg-gray-200 overflow-hidden cursor-pointer">
           <img
-            src={adminDefaultPic}
+            src={user.profilePicture ? user.profilePicture :  adminDefaultPic}
             alt="User profile"
             className="h-full w-full object-cover"
           />
