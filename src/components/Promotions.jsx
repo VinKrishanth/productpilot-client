@@ -1,89 +1,122 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+const promotions = [
+  {
+    id: 1,
+    title: "Sale of the Month",
+    subtitle: "Up to 50% Off",
+    description: "Fresh vegetables and fruits at the best prices",
+    timer: true,
+    endTime: new Date().getTime() + 2 * 60 * 60 * 1000 + 18 * 60 * 1000 + 46 * 1000, // 2h 18m 46s from now
+    imageUrl:
+      "https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    bgColor: "bg-blue-600",
+  },
+  {
+    id: 2,
+    title: "Low-Fat Meat",
+    subtitle: "Starting at $7.99",
+    description: "Premium quality meats",
+    timer: false,
+    imageUrl:
+      "https://images.unsplash.com/photo-1609950543182-6324c69cb486?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    bgColor: "bg-gray-900",
+  },
+  {
+    id: 3,
+    title: "100% Fresh Fruit",
+    subtitle: "Up to 30% Off",
+    description: "Fresh organic fruits for a healthy lifestyle",
+    timer: false,
+    imageUrl:
+      "https://images.unsplash.com/photo-1577234286642-fc512a5f8f11?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    bgColor: "bg-yellow-500",
+  },
+];
+
+const getTimeRemaining = (endTime) => {
+  const total = endTime - new Date().getTime();
+  const seconds = Math.max(Math.floor((total / 1000) % 60), 0);
+  const minutes = Math.max(Math.floor((total / 1000 / 60) % 60), 0);
+  const hours = Math.max(Math.floor((total / (1000 * 60 * 60)) % 24), 0);
+  const days = Math.max(Math.floor(total / (1000 * 60 * 60 * 24)), 0);
+
+  return { days, hours, minutes, seconds };
+};
 
 export default function Promotions() {
-  const promotions = [
-    {
-      id: 1,
-      title: "Sale of the Month",
-      subtitle: "Up to 50% Off",
-      description: "Fresh vegetables and fruits at the best prices",
-      timer: true,
-      imageUrl:
-        "https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      bgColor: "bg-blue-600",
-    },
-    {
-      id: 2,
-      title: "Low-Fat Meat",
-      subtitle: "Starting at $7.99",
-      description: "Premium quality meats",
-      imageUrl:
-        "https://images.unsplash.com/photo-1609950543182-6324c69cb486?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      bgColor: "bg-gray-900",
-    },
-    {
-      id: 3,
-      title: "100% Fresh Fruit",
-      subtitle: "up to 30% Off",
-      description: "Fresh organic fruits for a healthy lifestyle",
-      imageUrl:
-        "https://images.unsplash.com/photo-1577234286642-fc512a5f8f11?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      bgColor: "bg-yellow-500",
-    },
-  ];
+  const [timers, setTimers] = useState(
+    promotions.reduce((acc, promo) => {
+      if (promo.timer) acc[promo.id] = getTimeRemaining(promo.endTime);
+      return acc;
+    }, {})
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimers((prev) => {
+        const updated = { ...prev };
+        for (const promo of promotions) {
+          if (promo.timer) {
+            updated[promo.id] = getTimeRemaining(promo.endTime);
+          }
+        }
+        return updated;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="container mx-auto py-12 px-4 md:px-0">
+    <section className="container mx-auto px-4 md:px-0 py-12">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {promotions.map((promo) => (
           <div
             key={promo.id}
-            className={`${promo.bgColor} text-white rounded-lg overflow-hidden relative`}
+            className={`relative rounded-lg overflow-hidden text-white ${promo.bgColor}`}
           >
-            <div className="p-6 z-10 relative h-full">
-              <div className="mb-4">
-                <h3 className="text-xl font-bold">{promo.title}</h3>
+            {/* Overlay image */}
+            <div
+              className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30"
+              style={{ backgroundImage: `url(${promo.imageUrl})` }}
+            ></div>
+
+            <div className="relative z-10 p-6 h-full flex flex-col justify-between">
+              <div>
+                <h3 className="text-xl font-semibold">{promo.title}</h3>
                 <p className="text-2xl font-bold mt-1">{promo.subtitle}</p>
-                <p className="text-sm opacity-90 mt-2">{promo.description}</p>
+                <p className="text-sm mt-2 opacity-90">{promo.description}</p>
               </div>
 
               {promo.timer && (
-                <div className="flex space-x-2 my-4">
-                  <div className="bg-white bg-opacity-20 rounded p-2 text-center">
-                    <span className="block text-lg font-bold">00</span>
-                    <span className="text-xs">Days</span>
-                  </div>
-                  <div className="bg-white bg-opacity-20 rounded p-2 text-center">
-                    <span className="block text-lg font-bold">02</span>
-                    <span className="text-xs">Hours</span>
-                  </div>
-                  <div className="bg-white bg-opacity-20 rounded p-2 text-center">
-                    <span className="block text-lg font-bold">18</span>
-                    <span className="text-xs">Mins</span>
-                  </div>
-                  <div className="bg-white bg-opacity-20 rounded p-2 text-center">
-                    <span className="block text-lg font-bold">46</span>
-                    <span className="text-xs">Secs</span>
-                  </div>
+                <div className="flex space-x-2 my-4 text-black">
+                  {[
+                    { label: "Days", value: timers[promo.id]?.days || "00" },
+                    { label: "Hours", value: timers[promo.id]?.hours || "00" },
+                    { label: "Mins", value: timers[promo.id]?.minutes || "00" },
+                    { label: "Secs", value: timers[promo.id]?.seconds || "00" },
+                  ].map(({ label, value }, i) => (
+                    <div
+                      key={i}
+                      className="bg-white bg-opacity-20 rounded p-2 text-center"
+                    >
+                      <span className="block text-lg font-bold">
+                        {String(value).padStart(2, "0")}
+                      </span>
+                      <span className="text-xs">{label}</span>
+                    </div>
+                  ))}
                 </div>
               )}
 
-              <button className="mt-4 bg-white text-gray-900 hover:bg-gray-100">
+              <button className="mt-4 bg-[#059473] hover:bg-[#046c53] text-white font-medium text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition duration-300 w-40 cursor-pointer ">
                 Shop Now
               </button>
             </div>
-
-            {/* Background image with overlay */}
-            <div
-              className="absolute inset-0 bg-center bg-cover bg-opacity-30 mix-blend-overlay"
-              style={{
-                backgroundImage: `url(${promo.imageUrl})`,
-                opacity: 0.3,
-              }}
-            ></div>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

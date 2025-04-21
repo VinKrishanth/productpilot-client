@@ -30,14 +30,14 @@ export default function Shop() {
             <SaleTimer endDate={saleEndDate} />
           </div>
 
-          <button className="bg-[#059473] hover:bg-[#046c53] text-white font-medium text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition duration-300 w-full sm:w-auto">
+          <button className="bg-[#059473] hover:bg-[#046c53] text-white font-medium text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition duration-300 w-full sm:w-auto hidden">
             Shop Now
           </button>
 
           {/* Discount Badge */}
-          <div className="absolute top-8 right-8 md:right-16 bg-[#ff6316] text-white w-16 h-16 rounded-full flex flex-col items-center justify-center font-bold shadow-lg">
-            <div className="text-xl">56%</div>
-            <div className="text-xs">OFF</div>
+          <div className="absolute top-8 right-8 md:right-16 bg-[#ff6316] text-white sm:w-16 sm:h-16 h-10 w-10 rounded-full flex flex-col items-center justify-center font-bold shadow-lg">
+            <div className="sm:text-xl  text-xs">56%</div>
+            <div className="sm:text-xs text-[8px]">OFF</div>
           </div>
         </div>
       </div>

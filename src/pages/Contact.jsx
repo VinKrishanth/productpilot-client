@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { MapPin, Phone, MailCheckIcon } from "lucide-react";
+import { useAppContext } from "../context/AppContext";
+import { toast } from "react-hot-toast";
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
+  const { axios } = useAppContext()
+;  const [contact, setContact] = useState({
     name: "",
     email: "",
     subject: "",
@@ -10,17 +13,32 @@ const Contact = () => {
   });
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
+    setContact((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    alert("Message sent successfully!");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    try {
+      const res = await axios.post("/api/contact/send", contact);
+  
+      if (res.data.success) {
+        toast.success("Message sent successfully!");
+        setContact({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        toast.error("Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred. Please try again later.");
+    }
   };
 
   return (
@@ -98,7 +116,7 @@ const Contact = () => {
                       type="text"
                       name="name"
                       placeholder="Your Name"
-                      value={formData.name}
+                      value={contact.name}
                       onChange={handleChange}
                       required
                       className="border border-gray-300 px-4 py-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -107,7 +125,7 @@ const Contact = () => {
                       type="email"
                       name="email"
                       placeholder="Your Email"
-                      value={formData.email}
+                      value={contact.email}
                       onChange={handleChange}
                       required
                       className="border border-gray-300 px-4 py-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -118,7 +136,7 @@ const Contact = () => {
                     type="text"
                     name="subject"
                     placeholder="Subject"
-                    value={formData.subject}
+                    value={contact.subject}
                     onChange={handleChange}
                     required
                     className="border border-gray-300 px-4 py-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -127,7 +145,7 @@ const Contact = () => {
                   <textarea
                     name="message"
                     placeholder="Your Message"
-                    value={formData.message}
+                    value={contact.message}
                     onChange={handleChange}
                     required
                     className="border border-gray-300 px-4 py-3 rounded w-full min-h-[150px] focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -135,7 +153,7 @@ const Contact = () => {
 
                   <button
                     type="submit"
-                    className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded transition"
+                    className="cursor-pointer bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded transition"
                   >
                     Send Message
                   </button>

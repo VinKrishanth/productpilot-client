@@ -1,6 +1,8 @@
 import React from "react";
+import { useAppContext } from "../context/AppContext";
 
 export default function Hero() {
+  const { navigate } = useAppContext();
   return (
     <section className="relative bg-gray-100 py-12  sm:px-6 lg:px-8 overflow-hidden">
       <div className="container mx-auto">
@@ -25,7 +27,7 @@ export default function Hero() {
                 Free shipping on all your orders. We deliver, you enjoy.
               </p>
             </div>
-            <button className="mt-4 bg-green-500 hover:bg-green-600 text-white text-sm sm:text-base font-semibold rounded-full px-6 py-2 transition duration-200">
+            <button onClick={()=>{navigate('/shop')}} className="mt-4 bg-green-500 hover:bg-green-600 text-white text-sm sm:text-base font-semibold rounded-full px-6 py-2 transition duration-200">
               Shop Now <span className="ml-2">→</span>
             </button>
           </div>

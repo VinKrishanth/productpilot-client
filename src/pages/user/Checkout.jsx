@@ -405,7 +405,7 @@ export default function Checkout() {
             dashboardLoad
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-green-600 hover:bg-green-700"
-          } text-white text-sm font-semibold py-2 px-4 rounded transition duration-200 cursor-pointer`}
+          } text-white text-sm font-semibold py-2 px-4 rounded transition duration-200 cursor-pointer flex justify-center items-center`}
         >
           {dashboardLoad && <LoaderIcon className="animate-spin h-5 w-5 text-white" />}
           {dashboardLoad ? "Placing Order..." : "Place Order"}
