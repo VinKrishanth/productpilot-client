@@ -1,19 +1,78 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "../../components/ProductCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAppContext } from "../../context/AppContext";
 
+// Categories list
+const categories = [
+  { name: "Fruit", value: "fruit" },
+  { name: "Vegetables", value: "vegetables" },
+  { name: "Bakery", value: "bakery" },
+  { name: "Baking Need", value: "baking_need" },
+  { name: "Meat & Fish", value: "meat_fish" },
+  { name: "Cooking", value: "cooking" },
+  { name: "Snacks", value: "snacks" },
+  { name: "Diabetic", value: "diabetic" },
+  { name: "Beverages", value: "beverages" },
+  { name: "Dish Detergent", value: "dish_detergent" },
+  { name: "Oil", value: "oil" },
+  { name: "Beauty & Health", value: "beauty_health" },
+];
+
 export default function ProductGrid() {
   const [activeFilters, setActiveFilters] = useState(["inStock"]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(16);
-  const { products } = useAppContext();
+  const [perPage, setPerPage] = useState(15);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedRating, setSelectedRating] = useState("");
 
-  const totalResults = products.length;
+  const { products, searchQuery } = useAppContext();
+
+  useEffect(() => {
+    let filtered = products;
+
+    if (searchQuery.length > 0) {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (selectedCategory) {
+      filtered = filtered.filter(
+        (product) => product.category === selectedCategory
+      );
+    }
+
+    if (selectedRating) {
+      filtered = filtered.filter(
+        (product) => product.review >= parseInt(selectedRating)
+      );
+    }
+
+    setFilteredProducts(filtered);
+  }, [products, searchQuery, selectedCategory, selectedRating]);
+
+  const totalResults = filteredProducts.length;
   const totalPages = Math.ceil(totalResults / perPage);
 
   const clearFilter = (filter) => {
     setActiveFilters(activeFilters.filter((f) => f !== filter));
+    if (filter === selectedCategory) {
+      setSelectedCategory("");
+    }
+  };
+
+  const handleCategoryChange = (e) => {
+    const value = e.target.value;
+    setSelectedCategory(value);
+    setActiveFilters((prev) => {
+      const withoutCategory = prev.filter(
+        (f) => !categories.some((c) => c.value === f)
+      );
+      return value ? [...withoutCategory, value] : withoutCategory;
+    });
+    setCurrentPage(1);
   };
 
   const handlePerPageChange = (e) => {
@@ -21,31 +80,48 @@ export default function ProductGrid() {
     setCurrentPage(1);
   };
 
-  const paginatedProducts = products.slice(
+  const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * perPage,
     currentPage * perPage
   );
+
+  const handleAddToCart = (product) => {
+    console.log("Add to cart:", product.name);
+  };
 
   return (
     <div className="py-8 px-4 sm:px-6 lg:px-8">
       {/* Filters and Sort */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 overflow-y-hidden">
-        <div className="flex gap-3 whitespace-nowrap md:flex-wrap   sm:overflow-hidden overflow-x-scroll">
-          <select className="border border-gray-300 px-3 py-2 rounded min-w-[160px] bg-white text-sm">
-            <option value="category">Select Category</option>
-            <option value="vegetables">Vegetables</option>
-            <option value="fruits">Fruits</option>
-            <option value="meat">Meat & Fish</option>
+        <div className="flex gap-3 whitespace-nowrap md:flex-wrap sm:overflow-hidden overflow-x-scroll">
+          {/* Category Filter */}
+          <select
+            className="border border-gray-300 px-3 py-2 rounded min-w-[160px] bg-white text-sm"
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.name}
+              </option>
+            ))}
           </select>
 
+          {/* Price Sort */}
           <select className="border border-gray-300 px-3 py-2 rounded min-w-[160px] bg-white text-sm">
             <option value="price">Select Price</option>
             <option value="low-high">Low to High</option>
             <option value="high-low">High to Low</option>
           </select>
 
-          <select className="border border-gray-300 px-3 py-2 rounded min-w-[160px] bg-white text-sm">
-            <option value="rating">Select Rating</option>
+          {/* Rating Filter */}
+          <select
+            className="border border-gray-300 px-3 py-2 rounded min-w-[160px] bg-white text-sm"
+            value={selectedRating}
+            onChange={(e) => setSelectedRating(e.target.value)}
+          >
+            <option value="">Select Rating</option>
             <option value="5">5 Stars</option>
             <option value="4">4+ Stars</option>
             <option value="3">3+ Stars</option>
@@ -60,9 +136,9 @@ export default function ProductGrid() {
             value={perPage}
             onChange={handlePerPageChange}
           >
-            <option value="16">Show 16</option>
-            <option value="32">Show 32</option>
-            <option value="48">Show 48</option>
+            <option value="15">Show 15</option>
+            <option value="30">Show 30</option>
+            <option value="45">Show 45</option>
           </select>
         </div>
       </div>
@@ -113,7 +189,7 @@ export default function ProductGrid() {
       {/* Pagination */}
       <div className="flex items-center justify-center gap-2 flex-wrap">
         <button
-          className="w-8 h-8 p-0 border rounded hover:bg-gray-100 disabled:opacity-50  flex items-center justify-center"
+          className="w-8 h-8 p-0 border rounded hover:bg-gray-100 disabled:opacity-50 flex items-center justify-center"
           disabled={currentPage === 1}
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
         >
@@ -125,7 +201,7 @@ export default function ProductGrid() {
           return (
             <button
               key={idx}
-              className={`w-8 h-8 p-0 border rounded text-sm  flex items-center justify-center ${
+              className={`w-8 h-8 p-0 border rounded text-sm flex items-center justify-center ${
                 pageNum === currentPage
                   ? "bg-green-500 text-white"
                   : "hover:bg-gray-100"
@@ -141,7 +217,7 @@ export default function ProductGrid() {
           <>
             <span className="mx-1">...</span>
             <button
-              className="w-8 h-8 p-0 border rounded hover:bg-gray-100 text-sm  flex items-center justify-center"
+              className="w-8 h-8 p-0 border rounded hover:bg-gray-100 text-sm flex items-center justify-center"
               onClick={() => setCurrentPage(totalPages)}
             >
               {totalPages}
@@ -150,7 +226,7 @@ export default function ProductGrid() {
         )}
 
         <button
-          className="w-8 h-8 p-0 border rounded hover:bg-gray-100 disabled:opacity-50  flex items-center justify-center"
+          className="w-8 h-8 p-0 border rounded hover:bg-gray-100 disabled:opacity-50 flex items-center justify-center"
           disabled={currentPage === totalPages}
           onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
         >

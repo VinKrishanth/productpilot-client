@@ -172,21 +172,13 @@ const CartSidebar = () => {
               <span className="text-gray-500">Shipping</span>
               <span className="font-medium">Free</span>
             </div>
-            <div className="flex justify-between py-2">
-              <span className="text-gray-500">Tex(2%)</span>
-              <span className="font-medium">
-                {currency}
-                {getCartAmount() !== 0
-                  ? (getCartAmount() * 0.02).toFixed(2)
-                  : "0.00"}
-              </span>
-            </div>
+            
             <div className="h-px bg-gray-300 my-2" />
             <div className="flex justify-between py-2 font-semibold">
               <span>Total</span>
               <span className="text-eco-green font-bold">
                 {currency}{" "}
-                {(getCartAmount() + getCartAmount() * 0.02).toFixed(2)}
+                {getCartAmount().toFixed(2) }
               </span>
             </div>
             <div className="grid gap-2 mt-4 ">

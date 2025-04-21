@@ -12,7 +12,7 @@ export default function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const { user } = useAppContext();
+  const { user, isAdmin } = useAppContext();
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -28,21 +28,39 @@ export default function AdminLayout() {
               <Menu className="w-6 h-6 text-gray-800" />
             </button>
             <div className="h-10 w-10 rounded-full bg-gray-200 overflow-hidden cursor-pointer">
-              <img
-                src={user.profilePicture ? user.profilePicture : adminDefaultPic}
-                alt="User profile"
-                className="h-full w-full object-cover"
-              />
+              {user && (
+                <img
+                  src={
+                    user.profilePicture ? user.profilePicture : adminDefaultPic
+                  }
+                  alt="User profile"
+                  className="h-full w-full object-cover"
+                />
+              )}
+
+              {isAdmin && (
+                <img
+                  src={
+                    isAdmin.profilePicture ? isAdmin.profilePicture : adminDefaultPic
+                  }
+                  alt="User profile"
+                  className="h-full w-full object-cover"
+                />
+              )}
             </div>
           </div>
         )}
 
         {/* Main content that will change based on routes */}
         <main className={``}>
-          <div className={`${!isMobile && "border-b border-gray-400 pb-1"} fixed top-0 right-0 z-10 bg-white w-full`}>
+          <div
+            className={`${
+              !isMobile && "border-b border-gray-400 pb-1"
+            } fixed top-0 right-0 z-10 bg-white w-full`}
+          >
             <Header />
           </div>
-          <div className={`${!isMobile ? ' mt-20' : 'mt-25'} sm:px-8 z-10`}>
+          <div className={`${!isMobile ? " mt-20" : "mt-25"} sm:px-8 z-10`}>
             <Outlet />
           </div>
         </main>

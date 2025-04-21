@@ -5,6 +5,7 @@ import { fetchAdmin, fetchUser } from "../api/auth";
 import { fetchAllProducts } from "../api/Product";
 import { toast } from "react-hot-toast";
 import { updateCart } from "../api/cart";
+import { getUserAddress, getUserOrders } from "../api/userDashboard";
 
 // Axios global config
 axios.defaults.withCredentials = true;
@@ -29,6 +30,9 @@ export const AppContextProvider = ({ children }) => {
   const [product, setProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [wishlistItems, setWishlistItems] = useState([]);
+  const [userAddress, setUserAddress] = useState([]);
+  const [userOrders, setUserOrders] = useState([]);
+  const [searchQuery, setSearchQuery] = useState({});
 
   const openQuickView = (id) => {
     const selectedProduct = products.find((item) => item._id === id);
@@ -70,8 +74,6 @@ export const AppContextProvider = ({ children }) => {
       setIsAuth(false);
       setIsUser(null);
       setIsAdmin(null);
-      localStorage.removeItem("role");
-      setRole(null);
     } finally {
       setLoading(false);
     }
@@ -174,6 +176,18 @@ export const AppContextProvider = ({ children }) => {
     }
   }, [cartItems]);
 
+  useEffect(() => {
+    if (user) {
+      getUserAddress(axios, setUserAddress);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      getUserOrders(axios, setUserOrders);
+    }
+  }, [user]);
+
   const value = {
     navigate,
     axios,
@@ -212,6 +226,12 @@ export const AppContextProvider = ({ children }) => {
     deleteCartItem,
     dashboardLoad,
     setDashboardLoad,
+    userAddress,
+    setUserAddress,
+    userOrders,
+    setUserOrders,
+    searchQuery,
+    setSearchQuery,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

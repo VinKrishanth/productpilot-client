@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   ShoppingCart,
@@ -23,7 +23,7 @@ const shopLinks = [
 
 export default function Navbar({ cartCount }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { navigate, isAuth, axios, role,user, setIsAuth , openCart, updateCart} =useAppContext();
+  const { navigate, isAuth, axios, role,user, setIsAuth , openCart, updateCart, searchQuery, setSearchQuery} =useAppContext();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -44,6 +44,12 @@ export default function Navbar({ cartCount }) {
       navigate("/admin");
     }
   };
+
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      navigate("/shop");
+    }
+  }, [searchQuery]);
 
   return (
     <header className="w-full sticky top-0 z-50 bg-white shadow-sw-full">
@@ -73,6 +79,9 @@ export default function Navbar({ cartCount }) {
               type="text"
               placeholder="Search"
               className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
             />
             <button className="absolute right-0 top-0 h-full bg-green-500 text-white px-4 rounded-r-md">
               <Search className="h-5 w-5" />

@@ -12,7 +12,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const { axios,navigate, setLoading, loading, setIsUser, setIsAuth } = useAppContext();
+  const { axios,navigate, setLoading, loading, setIsUser, setIsAuth , setRole} = useAppContext();
 
   const emailRef = useRef(null);
 

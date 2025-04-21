@@ -91,7 +91,6 @@ function App() {
                 <Route index element={<AccountSettings />} />
                 <Route path="billing-address" element={<BillingAddress />} />
                 <Route path="change-password" element={<ChangePassword />} />
-                <Route path="support" element={<Support />} />
               </Route>
             </Route>
 

@@ -169,19 +169,13 @@ export default function ShoppingCart() {
                 <span className="text-gray-600">Shipping:</span>
                 <span className="font-medium">Free</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Tax (2%):</span>
-                <span className="font-medium">
-                  {currency}
-                  {getCartAmount() !== 0 ? (getCartAmount() * 0.02).toFixed(2) : "0.00"}
-                </span>
-              </div>
+              
 
               <hr />
               <div className="flex justify-between">
                 <span className="text-gray-800 font-semibold">Total:</span>
                 <span className="text-xl font-medium">
-                  {currency} {(getCartAmount() + getCartAmount() * 0.02).toFixed(2)}
+                  {currency} {getCartAmount().toFixed(2)}
                 </span>
               </div>
               <button

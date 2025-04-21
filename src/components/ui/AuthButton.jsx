@@ -31,7 +31,7 @@ export default function AuthButton() {
         className="p-1 relative cursor-pointer rounded-full bg-green-500 overflow-hidden"
       >
         {
-          user.profilePicture ? <img src={user.profilePicture} alt="user profile" className="w-6 h-6 scale-200 object-cover" /> : <User className="h-6 w-6 text-white" />
+          user ? <img src={user.profilePicture} alt="user profile" className="w-6 h-6 scale-200 object-cover" /> : <User className="h-6 w-6 text-white" />
         }
         
       </button>

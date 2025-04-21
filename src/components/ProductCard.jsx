@@ -22,7 +22,7 @@ export default function ProductCard({
     openQuickView(id);
   };
 
-  console.log(role);
+
   const addToProductCart = async (id) => {
     if (role === 'user') {
       await addToCart(id);

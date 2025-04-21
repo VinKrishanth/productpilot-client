@@ -1,129 +1,202 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAppContext } from "../../context/AppContext";
+import { LoaderIcon } from "lucide-react";
+import { toast } from "react-hot-toast";
+import {
+  createUserAddress,
+  updateUserAddress,
+} from "../../api/userDashboard.js";
 
-export default function BillingAddress  ({ onSave }){
-  const [formData, setFormData] = useState({
-    firstName: "Dianne",
-    lastName: "Russell",
-    company: "Zealansoft",
-    streetAddress: "4140 Parker Rd",
-    country: "United States",
-    state: "Washington DC",
-    zipCode: "20033",
-    email: "dianne.russell@gmail.com",
-    phone: "(603) 555-0123",
+export default function BillingAddress() {
+  const {
+    user,
+    axios,
+    dashboardLoad,
+    setDashboardLoad,
+    userAddress,
+    setUserAddress,
+  } = useAppContext();
+
+  const [address, setAddress] = useState({
+    firstName: userAddress?.firstName || "",
+    lastName: userAddress?.lastName || "",
+    company: userAddress?.company || "",
+    streetAddress: userAddress?.streetAddress || "",
+    country: userAddress?.country || "",
+    state: userAddress?.state || "",
+    zipCode: userAddress?.zipCode || "",
+    email: userAddress?.email || "",
+    phone: userAddress?.phone || "",
   });
+
+  const [ isAddressTrue , setIsAddressTrue] = useState( userAddress?.firstName ? true : false);
+  useEffect(() => {
+    if (userAddress) {
+      setAddress({
+        firstName: userAddress.firstName || "",
+        lastName: userAddress.lastName || "",
+        company: userAddress.company || "",
+        streetAddress: userAddress.streetAddress || "",
+        country: userAddress.country || "",
+        state: userAddress.state || "",
+        zipCode: userAddress.zipCode || "",
+        email: userAddress.email || "",
+        phone: userAddress.phone || "",
+      });
+      setIsAddressTrue(true);
+    }
+  }, [userAddress]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setAddress((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave();
+    const requiredFields = [
+      "firstName",
+      "lastName",
+      "streetAddress",
+      "country",
+      "state",
+      "zipCode",
+      "email",
+      "phone",
+    ];
+
+    const emptyField = requiredFields.find((field) => {
+      return typeof address[field] === "string" && !address[field]?.trim();
+    });
+
+    if (emptyField) {
+      toast.error(`${emptyField.replace(/([A-Z])/g, " $1")} is required`);
+      return;
+    }
+
+    if (isAddressTrue) {
+      await updateUserAddress({
+        axios,
+        address,
+        toast,
+        setDashboardLoad,
+        setUserAddress,
+      });
+    } else {
+      await createUserAddress({
+        axios,
+        address,
+        toast,
+        setDashboardLoad,
+        setUserAddress,
+      });
+    }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 sm:w-[90%]">
+    <div className="container bg-white rounded-lg sm:shadow-sm p-6 sm:w-[90%] sm:mt-35">
       <h2 className="text-xl font-medium mb-6">Billing Address</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="firstName" className="block text-sm font-medium mb-1">
-              First name
+            <label
+              htmlFor="firstName"
+              className="block text-sm font-medium mb-1"
+            >
+              First name <span className="text-red-400 text-sm">*</span>
             </label>
             <input
               id="firstName"
               name="firstName"
-              value={formData.firstName}
+              value={address.firstName}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none "
             />
           </div>
           <div>
-            <label htmlFor="lastName" className="block text-sm font-medium mb-1">
-              Last name
+            <label
+              htmlFor="lastName"
+              className="block text-sm font-medium mb-1"
+            >
+              Last name <span className="text-red-400 text-sm">*</span>
             </label>
             <input
               id="lastName"
               name="lastName"
-              value={formData.lastName}
+              value={address.lastName}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
             />
           </div>
           <div>
             <label htmlFor="company" className="block text-sm font-medium mb-1">
-              Company Name (Optional)
+              Company Name <span className="text-gray-300">(Optional)</span>
             </label>
             <input
               id="company"
               name="company"
-              value={formData.company}
+              value={address.company}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="streetAddress" className="block text-sm font-medium mb-1">
-            Street Address
+          <label
+            htmlFor="streetAddress"
+            className="block text-sm font-medium mb-1"
+          >
+            Street Address <span className="text-red-400 text-sm">*</span>
           </label>
           <input
+            type="text"
             id="streetAddress"
             name="streetAddress"
-            value={formData.streetAddress}
+            value={address.streetAddress}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label htmlFor="country" className="block text-sm font-medium mb-1">
-              Country / Region
+              Country / Region <span className="text-red-400 text-sm">*</span>
             </label>
-            <select
+            <input
+              type="text"
               id="country"
               name="country"
-              value={formData.country}
+              value={address.country}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            >
-              <option value="United States">United States</option>
-              <option value="Canada">Canada</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="Australia">Australia</option>
-            </select>
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
+            />
           </div>
           <div>
             <label htmlFor="state" className="block text-sm font-medium mb-1">
-              State
+              State <span className="text-red-400 text-sm">*</span>
             </label>
-            <select
+            <input
+              type="text"
               id="state"
               name="state"
-              value={formData.state}
+              value={address.state}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            >
-              <option value="Washington DC">Washington DC</option>
-              <option value="California">California</option>
-              <option value="New York">New York</option>
-              <option value="Texas">Texas</option>
-            </select>
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
+            />
           </div>
           <div>
             <label htmlFor="zipCode" className="block text-sm font-medium mb-1">
-              Zip Code
+              Zip Code <span className="text-red-400 text-sm">*</span>
             </label>
             <input
+              type="number"
               id="zipCode"
               name="zipCode"
-              value={formData.zipCode}
+              value={address.zipCode}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
             />
           </div>
         </div>
@@ -131,40 +204,54 @@ export default function BillingAddress  ({ onSave }){
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
+              Email <span className="text-red-400 text-sm">*</span>
             </label>
             <input
               id="email"
               name="email"
               type="email"
-              value={formData.email}
+              value={address.email}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
             />
           </div>
           <div>
             <label htmlFor="phone" className="block text-sm font-medium mb-1">
-              Phone
+              Phone <span className="text-red-400 text-sm">*</span>
             </label>
             <input
               id="phone"
               name="phone"
-              value={formData.phone}
+              type="text"
+              value={address.phone}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
             />
           </div>
         </div>
 
-        <div>
-          <button
-            type="submit"
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded"
-          >
-            Save Changes
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={dashboardLoad}
+          className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md text-white transition 
+    ${
+      dashboardLoad
+        ? "bg-green-400 cursor-not-allowed"
+        : "bg-green-500 hover:bg-green-600"
+    }`}
+        >
+          {dashboardLoad && (
+            <LoaderIcon className="animate-spin h-5 w-5 text-white" />
+          )}
+          {dashboardLoad
+            ? isAddressTrue
+              ? "Updating..."
+              : "Saving..."
+            : isAddressTrue
+            ? "Update"
+            : "Save Changes"}
+        </button>
       </form>
     </div>
   );
-};
+}

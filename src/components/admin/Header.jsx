@@ -6,8 +6,7 @@ import { useAppContext } from '../../context/AppContext';
 
 export default function Header() {
   const isMobile = useIsMobile();
-  const { user } = useAppContext();
-
+  const { user, isAdmin } = useAppContext();
   return (
     <div className={`flex flex-col md:flex-row justify-end items-start md:items-center p-4  md:space-y-0 ${isMobile  && 'hidden'}`}>
       <div className="flex items-end w-full md:w-auto space-x-2 md:space-x-4">
@@ -33,11 +32,16 @@ export default function Header() {
           </>
         )}
         <div className="h-10 w-10 rounded-full bg-gray-200 overflow-hidden cursor-pointer">
-          <img
-            src={user.profilePicture ? user.profilePicture :  adminDefaultPic}
+          { user && <img
+            src={user.profilePicture  ? user.profilePicture :  adminDefaultPic}
             alt="User profile"
             className="h-full w-full object-cover"
-          />
+          />}
+          { isAdmin && <img
+            src={isAdmin.profilePicture  ? isAdmin.profilePicture :  adminDefaultPic}
+            alt="User profile"
+            className="h-full w-full object-cover"
+          />}
         </div>
       </div>
     </div>

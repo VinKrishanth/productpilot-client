@@ -31,6 +31,8 @@ const AddProductForm = () => {
   const [type, setType] = useState("");
 
   const { navigate,  axios, setLoading, setProducts , toast, isAdmin} = useAppContext();
+  const [files, setFiles] = useState([]);
+
 
   useEffect(() => {
     if (price && offer) {

@@ -85,7 +85,7 @@ const Sidebar = ({ className = '', isOpen = false, onClose = () => {} }) => {
             Ask questions or report issues. Our team is available 24/7.
           </p>
         </div>
-        <button onClick={()=>navigate('/customer/support')} className="w-full flex items-center justify-center bg-blue-50 text-blue-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-100 transition">
+        <button onClick={()=>navigate('/customer/support')} className="w-full hidden items-center justify-center bg-blue-50 text-blue-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-100 transition">
           <MessageCircle className="w-4 h-4 mr-2" />
           Connect Now
         </button>

@@ -1,197 +1,161 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
-const orderHistoryData = [
-  {
-    id: "#3933",
-    date: "4 April, 2021",
-    total: "$135.00",
-    products: "(5 Products)",
-    status: "Processing",
-  },
-  {
-    id: "#5046",
-    date: "27 Mar, 2021",
-    total: "$25.00",
-    products: "(1 Product)",
-    status: "on the way",
-  },
-  {
-    id: "#5028",
-    date: "20 Mar, 2021",
-    total: "$250.00",
-    products: "(4 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#4600",
-    date: "19 Mar, 2021",
-    total: "$35.00",
-    products: "(1 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#4152",
-    date: "18 Mar, 2021",
-    total: "$578.00",
-    products: "(13 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#4811",
-    date: "10 Mar, 2021",
-    total: "$345.00",
-    products: "(7 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#3536",
-    date: "5 Mar, 2021",
-    total: "$560.00",
-    products: "(2 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#1374",
-    date: "27 Feb, 2021",
-    total: "$560.00",
-    products: "(2 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#7791",
-    date: "25 Feb, 2021",
-    total: "$560.00",
-    products: "(2 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#4846",
-    date: "24 Feb, 2021",
-    total: "$23.00",
-    products: "(1 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#5948",
-    date: "20 Feb, 2021",
-    total: "$23.00",
-    products: "(1 Products)",
-    status: "Completed",
-  },
-  {
-    id: "#1577",
-    date: "12 Oct, 2020",
-    total: "$23.00",
-    products: "(1 Products)",
-    status: "Completed",
-  },
-];
+import { useAppContext } from "../../context/AppContext";
+import { LucideEye} from 'lucide-react'
 
 export default function Order() {
+  const { userOrders, currency } = useAppContext();
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 10;
-  const totalPages = Math.ceil(orderHistoryData.length / ordersPerPage);
 
-  const currentOrders = orderHistoryData.slice(
+  const totalPages = Math.ceil(userOrders.length / ordersPerPage);
+  const currentOrders = userOrders.slice(
     (currentPage - 1) * ordersPerPage,
     currentPage * ordersPerPage
   );
 
+  const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  };
+
+  const getStatusStyles = (status) => {
+    const baseClasses = "px-2 py-1 rounded-full text-xs font-semibold";
+    switch (status.toLowerCase()) {
+      case "completed":
+        return `${baseClasses} bg-green-100 text-green-700`;
+      case "processing":
+        return `${baseClasses} bg-blue-100 text-blue-700`;
+      case "on the way":
+        return `${baseClasses} bg-yellow-100 text-yellow-700`;
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-700`;
+    }
+  };
+
   return (
-    <div className="py-8 px-4">
+    <section className="py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Order History</h1>
-        <div className="bg-white rounded-lg shadow-md overflow-x-auto">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Order History</h2>
+
+        <div className="bg-white rounded-lg shadow overflow-x-auto">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-100 text-gray-700">
+            <thead className="bg-gray-100 text-gray-700 uppercase">
               <tr>
                 <th className="px-4 py-3">Order ID</th>
-                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3 ">Date</th>
                 <th className="px-4 py-3">Total</th>
+                <th className="px-6 py-3">Payment Type</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Action</th>
+                <th className="px-4 py-3">Action</th>
               </tr>
             </thead>
             <tbody>
-              {currentOrders.map((order) => (
-                <tr key={order.id} className="border-b">
-                  <td className="px-4 py-3 font-medium">{order.id}</td>
-                  <td className="px-4 py-3">{order.date}</td>
-                  <td className="px-4 py-3">
-                    {order.total}
-                    <span className="text-gray-500 text-sm ml-2">
-                      {order.products}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        order.status === "Completed"
-                          ? "bg-green-100 text-green-700"
-                          : order.status === "Processing"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link
-                      to={`/history/${order.id.replace("#", "")}`}
-                      className="text-green-500 hover:underline text-sm"
-                    >
-                      View Details
-                    </Link>
+              {userOrders.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center py-6 text-gray-500">
+                    No orders found.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                currentOrders.map((order) => (
+                  <tr key={order._id} className="border-b">
+                    <td className="px-4 py-3 font-medium text-gray-900">
+                      {order._id.slice(-7)}
+                    </td>
+                    <td className="px-4 py-3 text-gray-700 min-w-30">
+                      {formatDateTime(order.updatedAt)}
+                    </td>
+                    <td className="px-4 py-3 text-gray-700  min-w-40">
+                      {currency} {order.amount.toFixed(2)}
+                      <span className="text-gray-500 text-xs ml-2">
+                        {order.items?.length || 0} items
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
+                          order.address?.paymentMethod === "cod"
+                            ? "bg-green-100 text-green-800"
+                            : order.address?.paymentMethod === "card"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {order.address?.paymentMethod}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={getStatusStyles(order.status)}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right min-w-40">
+                      <Link
+                        to={`/history/${order._id}`}
+                        className="text-green-600 hover:underline text-sm"
+                      >
+                        <LucideEye className="h-5 w-5 cursor-pointer" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
 
           {/* Pagination */}
-          <div className="flex items-center justify-center gap-2 px-4 py-4 border-t">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              className={`px-3 py-1 rounded ${
-                currentPage === 1
-                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-              disabled={currentPage === 1}
-            >
-              Prev
-            </button>
-
-            {Array.from({ length: totalPages }).map((_, idx) => (
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 px-4 py-4 border-t bg-gray-50">
               <button
-                key={idx}
-                onClick={() => setCurrentPage(idx + 1)}
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
                 className={`px-3 py-1 rounded ${
-                  currentPage === idx + 1
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-100 hover:bg-gray-200"
+                  currentPage === 1
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-white hover:bg-gray-100"
                 }`}
               >
-                {idx + 1}
+                Prev
               </button>
-            ))}
 
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              className={`px-3 py-1 rounded ${
-                currentPage === totalPages
-                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentPage(idx + 1)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === idx + 1
+                      ? "bg-green-500 text-white"
+                      : "bg-white hover:bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {idx + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded ${
+                  currentPage === totalPages
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-white hover:bg-gray-100"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

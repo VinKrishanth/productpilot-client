@@ -1,6 +1,24 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Loader() {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Reading the query parameters from the URL
+    const params = new URLSearchParams(location.search);
+    const nextPage = params.get("next");
+
+    // If the next page is 'customer', redirect to /customer
+    if (nextPage === "customer") {
+      navigate("/customer");
+    }
+  }, [location, navigate]);
+  
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-white">
       <div className="loading">
