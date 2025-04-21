@@ -7,7 +7,7 @@ export {default as aboutPartnerGroupPic} from  './Group.jpg';
 export {default as aboutPartnerFoodPic} from  './food.jpg';
 export {default as aboutPartnerMangoPic} from  './mango.jpg';
 export {default as aboutPartnerVectorPic} from  './Vector.jpg';
-export {default as aboutPartnerGroupYPic} from  './GroupY.jpg';
+export {default as aboutPartnerGroupYPic} from  './Groupy.jpg';
 export {default as aboutCustomerPic1 } from  './customer-1.png';                 
 export {default as aboutCustomerPic2 } from  './customer-2.png';                 
 export {default as aboutCustomerPic3 } from  './customer-3.png';                 
